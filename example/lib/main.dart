@@ -1,3 +1,4 @@
+import 'package:fl_scrcpy/fl_scrcpy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -18,13 +19,12 @@ class _AppState extends State<_App> {
   void initState() {
     super.initState();
     Curiosity().desktop.focusDesktop().then((value) {
-      if (value) Curiosity().desktop.setDesktopSizeTo5P5();
+      if (value) Curiosity().desktop.setDesktopSize(const Size(600, 600));
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        appBar: AppBar(title: const Text('FlScrcpy')), children: []);
+    return const ExtendedScaffold(body: FlScrcpy());
   }
 }
