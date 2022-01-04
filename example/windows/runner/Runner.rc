@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "com.fl.scrcpy" "\0"
             VALUE "FileDescription", "A new Flutter project." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "FlScrcpy" "\0"
+            VALUE "InternalName", "FlCommand" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2021 com.fl.scrcpy. All rights reserved." "\0"
-            VALUE "OriginalFilename", "FlScrcpy.exe" "\0"
-            VALUE "ProductName", "FlScrcpy" "\0"
+            VALUE "OriginalFilename", "FlCommand.exe" "\0"
+            VALUE "ProductName", "FlCommand" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,2 +1,2 @@
-# fl_scrcpy
-Flutter scrcpy supports MAC Windows Linux
+# fl_command
+Flutter Command supports MAC Windows Linux

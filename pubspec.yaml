@@ -1,7 +1,7 @@
-name: fl_scrcpy
-description: A new Flutter project.
+name: fl_command
+description: Command line integration conversion with support for ADB and SCRCPY
 version: 0.0.1
-repository: https://github.com/Wayaer/fl_scrcpy.git
+repository: https://github.com/Wayaer/fl_command.git
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   process_run: ^0.12.3+1
+
 
 dev_dependencies:
   flutter_test:

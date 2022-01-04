@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:fl_scrcpy/terminal.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:process_run/shell.dart';
 
 class ScrcpyScript {
   factory ScrcpyScript() => _singleton ??= ScrcpyScript._();
@@ -43,16 +39,16 @@ class ScrcpyScript {
 
   /// 无边框
   /// 禁用窗口边框：
-  String setBorderless() => 'scrcpy --window-borderless';
+  String setBorderless = 'scrcpy --window-borderless';
 
   /// 保持窗口在最前
   /// 您可以通过如下命令保持窗口在最前面：
-  String alwaysOnTop() => 'scrcpy --always-on-top';
+  String alwaysOnTop = 'scrcpy --always-on-top';
 
   /// 全屏
   /// 您可以通过如下命令直接全屏启动 scrcpy：
   /// scrcpy -f  # 简写
-  String setFullscreen() => 'scrcpy --fullscreen';
+  String setFullscreen = 'scrcpy --fullscreen';
 
   /// 可选的值有：
   /// 0: 无旋转
@@ -64,36 +60,36 @@ class ScrcpyScript {
   /// 只读
   /// 禁用电脑对设备的控制 (任何可与设备交互的方式：如键盘输入、鼠标事件和文件拖放)：
   /// scrcpy -n
-  String setNoControl() => 'scrcpy --no-control';
+  String setNoControl = 'scrcpy --no-control';
 
   /// 保持常亮
   /// 阻止设备在连接时一段时间后休眠：
   /// scrcpy -w
-  String stayAwake() => 'scrcpy --stay-awake';
+  String stayAwake = 'scrcpy --stay-awake';
 
   /// 关闭设备屏幕
   /// 可以通过以下的命令行参数在关闭设备屏幕的状态下进行镜像：
   /// scrcpy -S
-  String turnOffScreen() => 'scrcpy --turn-screen-off';
+  String turnOffScreen = 'scrcpy --turn-screen-off';
 
   ///  退出时息屏
   /// scrcpy 退出时关闭设备屏幕：
-  String powerOffOnClose() => 'scrcpy --power-off-on-close';
+  String powerOffOnClose = 'scrcpy --power-off-on-close';
 
   /// 退出
-  String powerOff() => 'scrcpy --power-off';
+  String powerOff = 'scrcpy --power-off';
 
   /// 显示触摸
   /// 在演示时，可能会需要显示 (在物理设备上的) 物理触摸点。
   /// Android 在 开发者选项 中提供了这项功能。
   /// Scrcpy 提供一个选项可以在启动时开启这项功能并在退出时恢复初始设置：
   /// scrcpy -t
-  String showTouches() => 'scrcpy --show-touches';
+  String showTouches = 'scrcpy --show-touches';
 
   /// 关闭屏保
   /// Scrcpy 默认不会阻止电脑上开启的屏幕保护。
   /// 关闭屏幕保护：
-  String disableScreensaver() => 'scrcpy --disable-screensaver';
+  String disableScreensaver = 'scrcpy --disable-screensaver';
 
   /// 输入控制
   /// 旋转设备屏幕
@@ -139,7 +135,7 @@ class ScrcpyScript {
   /// 不过，这种方法仅支持 USB 连接以及 Linux平台。
   /// 启用 HID 模式：
   /// scrcpy -K  # 简写
-  String hidKeyboard() => 'scrcpy --hid-keyboard';
+  String hidKeyboard = 'scrcpy --hid-keyboard';
 
   /// 如果失败了 (如设备未通过 USB 连接)，则自动回退至默认模式 (终端中会输出日志)。这即允许通过 USB 和 TCP/IP 连接时使用相同的命令行参数。
   /// 在这种模式下，原始按键事件 (扫描码) 被发送给设备，而与宿主机按键映射无关。因此，若键盘布局不匹配，需要在 Android 设备上进行配置，具体为 设置 → 系统 → 语言和输入法 → [实体键盘]。
@@ -149,19 +145,19 @@ class ScrcpyScript {
   /// 文本事件 ，代表一个字符被输入。
   /// 程序默认使用按键事件来输入字母。只有这样，键盘才会在游戏中正常运作 (例如 WASD 键)。
   /// 但这也有可能造成一些问题。如果您遇到了问题，可以通过以下方式避免：
-  String preferText() => 'scrcpy --prefer-text';
+  String preferText = 'scrcpy --prefer-text';
 
   /// (这会导致键盘在游戏中工作不正常)
   /// 该选项不影响 HID 键盘 (该模式下，所有按键都发送为扫描码)。
   /// 按键重复
   /// 默认状态下，按住一个按键不放会生成多个重复按键事件。在某些游戏中这通常没有实际用途，且可能会导致性能问题。
   /// 避免转发重复按键事件：
-  String noKeyRepeat() => 'scrcpy --no-key-repeat';
+  String noKeyRepeat = 'scrcpy --no-key-repeat';
 
   /// 该选项不影响 HID 键盘 (该模式下，按键重复由 Android 直接管理)。
   /// 右键和中键
   /// 默认状态下，右键会触发返回键 (或电源键开启)，中键会触发 HOME 键。要禁用这些快捷键并把所有点击转发到设备：
-  String forwardAllClicks() => 'scrcpy --forward-all-clicks';
+  String forwardAllClicks = 'scrcpy --forward-all-clicks';
 
   /// 文件拖放
   /// 安装APK
@@ -233,17 +229,6 @@ class ScrcpyScript {
   ///  显示屏
   /// 如果设备有多个显示屏，可以选择要镜像的显示屏：
   String display(String id) => 'scrcpy --display $id';
-
-  /// 可以通过如下命令列出所有显示屏的 id：
-  String adbAllDisplay() => 'adb shell dumpsys display';
-
-  /// SSH 隧道
-  /// 要远程连接到设备，可以将本地的 adb 客户端连接到远程的 adb 服务端 (需要两端的 adb 协议版本相同)：
-  /// # 关闭本地 5037 端口上的 adb 服务端
-  String adbKill() => 'adb kill-server';
-
-  /// 获取所以android 设备
-  String adbDevices() => 'adb devices';
 
   /// ssh -CN -L5037:localhost:5037 -R27183:localhost:27183 your_remote_computer
   /// # 保持该窗口开启
@@ -346,73 +331,9 @@ class ScrcpyScript {
   /// 缓冲
   /// 可以加入缓冲，会增加延迟，但可以减少抖动 (见 #2464)。
   /// 对于显示缓冲： # 为显示增加 50 毫秒的缓冲
-  String addCache(double ms) => ' scrcpy --display-buffer=$ms';
+  String addCache(double ms) => 'scrcpy --display-buffer=$ms';
 
   /// 对于 V4L2 漏:
   /// # 为 v4l2 漏增加 500 毫秒的缓冲
-  String addCacheWithV4l2(double ms) => ' scrcpy --v4l2-buffer=$ms';
-}
-
-class ScrcpyProcess with ChangeNotifier {
-  ScrcpyProcess(
-      {Shell? shell,
-      ShellLinesController? shellController,
-      this.terminalController,
-      String? path,
-      this.onOutPut}) {
-    this.shellController = shellController ?? ShellLinesController();
-    this.shell = shell ??
-        Shell(
-            stdout: this.shellController.sink,
-            workingDirectory: path,
-            verbose: true,
-            commentVerbose: true,
-            commandVerbose: true);
-    _listen = this.shellController.stream.listen(_outListen);
-  }
-
-  void _outListen(event) {
-    onOutPut?.call(event);
-    terminalController?.output(event);
-  }
-
-  final ValueChanged<String>? onOutPut;
-
-  bool get hasScrcpy => whichSync('scrcpy') != null;
-
-  bool get hasADB => whichSync('adb') != null;
-
-  StreamSubscription<dynamic>? _listen;
-
-  late TerminalController? terminalController;
-  late ShellLinesController shellController;
-  late Shell shell;
-  late ScrcpyScript script = ScrcpyScript();
-
-  Future<bool> help([String? serial, bool autoADB = false]) =>
-      _runScript(script.help);
-
-  Future<bool> startScreen([String? serial, bool autoADB = false]) =>
-      _runScript(script.start(serial, autoADB));
-
-  Future<bool> getDevices() => _runScript(script.adbDevices());
-
-  Future<bool> setFullscreen() => _runScript(script.setFullscreen());
-
-  Future<bool> _runScript(String script) async {
-    terminalController?.run(script);
-    var state = await shell.run(script).onError((error, stackTrace) {
-      terminalController?.exception(error.toString());
-      return Future.error(error!);
-    });
-    return false;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _listen?.cancel();
-    shellController.close();
-    _runScript(script.powerOff());
-  }
+  String addCacheWithV4l2(double ms) => 'scrcpy --v4l2-buffer=$ms';
 }

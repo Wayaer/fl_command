@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(FlScrcpy LANGUAGES CXX)
+project(FlCommand LANGUAGES CXX)
 
-set(BINARY_NAME "FlScrcpy")
+set(BINARY_NAME "FlCommand")
 
 cmake_policy(SET CMP0063 NEW)
 

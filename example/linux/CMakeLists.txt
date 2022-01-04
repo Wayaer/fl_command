@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "example")
-set(APPLICATION_ID "com.fl.scrcpy.example")
+set(BINARY_NAME "FlCommand")
+set(APPLICATION_ID "com.fl.command.example")
 
 cmake_policy(SET CMP0063 NEW)
 
