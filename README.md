@@ -1,2 +1,2 @@
 # fl_command
-Flutter Command supports MAC Windows Linux
+Flutter Command adds ADB and SCRCPY most commands support MAC Windows Linux
