@@ -22,64 +22,81 @@ class AdbScript {
   /// dumpsys 数据
   final AdbAdbDumpsysScript dumpsys = AdbAdbDumpsysScript();
 
+  /// 安装 adb
+  String get installADB => 'install adb';
+
   /// 关闭adb服务
   String killServer = 'adb kill-server';
 
-  ///打开adb服务
+  /// 打开adb服务
   String startServer = 'adb start-server';
 
-  //获取连接的设备
+  /// 获取连接的设备
   String devices = 'adb devices';
 
   /// 从手机取出文件
   String pull(String phonePath, String computerPath) =>
       'adb pull $phonePath $computerPath';
 
-  //往手机中添加文件
+  /// 往手机中添加文件
   String push(String computerPath, String phonePath) =>
       'adb push $computerPath $phonePath';
 
-  //安装
-  String install(String apkPath) => 'adb install $apkPath';
+  /// 安装
+  String install(String apkPath, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} install $apkPath';
 
-  //卸载包
-  String uninstall(String package) => 'adb uninstall $package';
+  /// 卸载包
+  String uninstall(String package, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} uninstall $package';
 
-//获得手机id
-  String getAndroidId = 'adb shell settings get secure android_id';
+  /// 获得手机id
+  String getAndroidId({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell settings get secure android_id';
 
   /// 可以通过如下命令列出所有显示屏的 id：
-  String adbAllDisplay() => 'adb shell dumpsys display';
+  String adbAllDisplay({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys display';
 
   /// 查看当前目录
   String currentDirectory = 'ls';
 
   /// 查看指定应用内容
-  String runAS(String packageName) => 'run as $packageName';
+  String runAS(String packageName, {String? serial}) =>
+      'run ${serial == null ? '' : '-s $serial'} as $packageName';
 
   /// 查看服务列表
-  String serviceList = 'adb shell service list';
+  String serviceList({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell service list';
 
   /// 查看服务是否存在
-  String checkService(String serviceName) =>
-      'adb shell service check $serviceName';
+  String checkService(String serviceName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell service check $serviceName';
 
   /// 获取手机分辨率
-  String wmSize = 'adb shell wm size';
+  String wmSize({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell wm size';
 
   /// 获取手机物理密度
-  String wmDensity = 'adb shell wm density';
+  String wmDensity({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell wm density';
 
   /// 截屏
-  String screenCap(String path, {String? displayId}) {
-    var screenCap = 'adb shell screencap -p $path';
+  String screenCap(String path, {String? displayId, String? serial}) {
+    var screenCap =
+        'adb ${serial == null ? '' : '-s $serial'} shell screencap -p $path';
     if (displayId != null) screenCap += ' -d screencap';
     return screenCap;
   }
 
   String screenRecord(String path,
-      {Size? size, int? bitRate, int? timeLimit, bool verbose = false}) {
-    var record = 'adb shell screenrecord $path';
+      {Size? size,
+      int? bitRate,
+      int? timeLimit,
+      bool verbose = false,
+      String? serial}) {
+    var record =
+        'adb ${serial == null ? '' : '-s $serial'} shell screenrecord $path';
     if (size != null) {
       record = record.replaceFirst('screenrecord', 'screenrecord --size $size');
     }
@@ -106,28 +123,36 @@ class AdbGetPropScript {
   static AdbGetPropScript? _singleton;
 
   /// 获取手机产品信息
-  String grepProduct = 'adb shell getprop | grep product';
+  String grepProduct({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep product';
 
   /// 获取手机配置信息
-  String grepBuild = 'adb shell getprop | grep build';
+  String grepBuild({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep build';
 
   /// 获取手机虚拟机信息
-  String grepHeap = 'adb shell getprop | grep heap';
+  String grepHeap({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep heap';
 
   /// 获取更多信息
-  String getProp = 'adb shell getprop';
+  String getProp({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell getprop';
 
   /// 查看手机内存信息
-  String cat = 'adb shell cat';
+  String cat({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell cat';
 
   /// 查看手机CPU信息
-  String cpuInfo = 'adb shell cat /proc/cpuinfo';
+  String cpuInfo({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell cat /proc/cpuinfo';
 
   /// 查看手机里所有应用程序的进程信息
-  String ps = 'adb shell ps';
+  String ps({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell ps';
 
   /// 查看应用程序的进程信息
-  String psPackage(String packageName) => 'adb shell ps | grep $packageName';
+  String psPackage(String packageName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell ps | grep $packageName';
 }
 
 class AdbInputScript {
@@ -141,21 +166,24 @@ class AdbInputScript {
   String inputText(String data) => 'adb shell input text "$data"';
 
   /// 模拟返回键
-  String touchBack = 'adb shell input keyevent 4';
+  String touchBack({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell input keyevent 4';
 
   /// 模拟点击home
-  String touchHome = 'adb shell input keyevent 3';
+  String touchHome({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell input keyevent 3';
 
   /// 点击指定坐标位置
-  String touchXY(Offset offset) =>
-      'adb shell input tap ${offset.dx} ${offset.dy}';
+  String touchXY(Offset offset, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell input tap ${offset.dx} ${offset.dy}';
 
   /// 模拟滑动
-  String swipeXY(Offset startOffset, Offset endOffset) =>
-      'adb shell input swipe ${startOffset.dx} ${startOffset.dy} ${endOffset.dx} ${endOffset.dy}';
+  String swipeXY(Offset startOffset, Offset endOffset, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell input swipe ${startOffset.dx} ${startOffset.dy} ${endOffset.dx} ${endOffset.dy}';
 
   /// 查看更多信息
-  String input = 'adb shell input';
+  String input({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell input';
 }
 
 class AdbAMScript {
@@ -167,19 +195,23 @@ class AdbAMScript {
 
   /// 启动Activity/Broadcast/Service
   /// {your package name} / {your  activity}
-  String startApp(String packageName, String activity) =>
-      'adb shell am start $packageName/$activity';
+  String startApp(String packageName, String activity, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am start $packageName/$activity';
 
   /// 这里-a表示动作，-d表述传入的数据，还有-t表示传入的类型
   /// 例如，打开一个网页：
-  /// adb shell am start -a android.intent.action.VIEW -d http://www.baidu.com （这里-d表示传入的data）
+  /// adb shell am start -a android.intent.action.VIEW -d http:/// www.baidu.com （这里-d表示传入的data）
   /// 打开音乐播放器:
   /// adb shell am start -a android.intent.action.MUSIC_PLAYER
   /// 发送广播：
   /// adb shell am broadcast -a {广播动作}
   String startActivity(
-      {String? action, String? data, String? mimeType, String? identifier}) {
-    String start = 'adb shell am start';
+      {String? action,
+      String? data,
+      String? mimeType,
+      String? identifier,
+      String? serial}) {
+    String start = 'adb ${serial == null ? '' : '-s $serial'} shell am start';
     if (action != null) start += ' -a $action';
     if (data != null) start += ' -d $data';
     if (mimeType != null) start += ' -t $mimeType';
@@ -187,44 +219,47 @@ class AdbAMScript {
     return start;
   }
 
-  //打开服务
-  String startService(String serviceName) =>
-      'adb shell am startservice $serviceName';
+  /// 打开服务
+  String startService(String serviceName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am startservice $serviceName';
 
-  //关闭服务
-  String stopService(String serviceName) =>
-      'adb shell am stopservice $serviceName';
+  /// 关闭服务
+  String stopService(String serviceName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am stopservice $serviceName';
 
-  // 应用程序启动耗时
+  /// 应用程序启动耗时
   /// WaitTime 表示总的耗时，包括前一个应用 Activity pause 的时间和新应用启动的时；
-  // ThisTime 表示一连串启动 Activity 的最后一个 Activity 的启动耗时；
-  // TotalTime 表示新应用启动的耗时，包括新进程的启动和 Activity 的启动，但不包括前一个应用 Activity pause 的耗时。也就是说，开发者一般只要关心TotalTime 即可，这个时间才是自己应用真正启动的耗时
-  String startTimeConsuming(String packageName, String activityName) =>
-      'adb shell am start -W $packageName/$activityName';
+  /// ThisTime 表示一连串启动 Activity 的最后一个 Activity 的启动耗时；
+  /// TotalTime 表示新应用启动的耗时，包括新进程的启动和 Activity 的启动，但不包括前一个应用 Activity pause 的耗时。也就是说，开发者一般只要关心TotalTime 即可，这个时间才是自己应用真正启动的耗时
+  String startTimeConsuming(String packageName, String activityName,
+          {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am start -W $packageName/$activityName';
 
   /// 查看所有应用程序的Activity栈信息
-  String stackList = 'adb shell am stack list';
+  String stackList({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am stack list';
 
   /// 查看某个应用程序的Activity栈信息
-  String stackListWithApp(String packageName) =>
-      'adb shell am stack list | grep $packageName';
+  String stackListWithApp(String packageName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am stack list | grep $packageName';
 
   /// 模拟系统低内存
-  ///level:
-  // COMPLETE：该进程接近后台LRU列表的末尾，如果很快找不到更多内存，它将被终止。
-  // MODERATE：该进程位于后台LRU列表的中间； 释放内存可以帮助系统在列表中稍后运行其他进程以获得更好的整体性能。
-  // BACKGROUND：该进程已进入LRU列表。 这是一个清理资源的好机会，如果用户返回应用程序，可以高效快速地重建这些资源。
-  // HIDDEN：该进程一直显示用户界面，并且不再这样做。 此时应该释放具有UI的大量分配，以便更好地管理内存。
-  // RUNNING_CRITICAL：该进程不是一个可消耗的后台进程，但是该设备的内存运行极低，并且无法保持任何后台进程运行。 您的运行进程应该释放尽可能多的非关键资源，以允许在其他地方使用该内存。 接下来的事情将在{@link #onLowMemory（）}调用后报告该事件什么都没有可以保留在后台，这种情况可以明显影响用户。
-  // RUNNING_LOW：该进程不是可消耗的后台进程，但设备内存不足。 您的运行进程应释放不需要的资源，以允许在其他地方使用该内存。
-  // RUNNING_MODERATE：该进程不是可消耗的后台进程，但设备的内存运行速度适中。 您的运行进程可能希望释放一些不需要的资源以供其他地方使用。
+  /// level:
+  /// COMPLETE：该进程接近后台LRU列表的末尾，如果很快找不到更多内存，它将被终止。
+  /// MODERATE：该进程位于后台LRU列表的中间； 释放内存可以帮助系统在列表中稍后运行其他进程以获得更好的整体性能。
+  /// BACKGROUND：该进程已进入LRU列表。 这是一个清理资源的好机会，如果用户返回应用程序，可以高效快速地重建这些资源。
+  /// HIDDEN：该进程一直显示用户界面，并且不再这样做。 此时应该释放具有UI的大量分配，以便更好地管理内存。
+  /// RUNNING_CRITICAL：该进程不是一个可消耗的后台进程，但是该设备的内存运行极低，并且无法保持任何后台进程运行。 您的运行进程应该释放尽可能多的非关键资源，以允许在其他地方使用该内存。 接下来的事情将在{@link #onLowMemory（）}调用后报告该事件什么都没有可以保留在后台，这种情况可以明显影响用户。
+  /// RUNNING_LOW：该进程不是可消耗的后台进程，但设备内存不足。 您的运行进程应释放不需要的资源，以允许在其他地方使用该内存。
+  /// RUNNING_MODERATE：该进程不是可消耗的后台进程，但设备的内存运行速度适中。 您的运行进程可能希望释放一些不需要的资源以供其他地方使用。
   /// 例子
   /// adb shell am send-trim-memory 10053 RUNNING_LOW
-  String sendTrimMemory(String pid, String level) =>
-      'adb shell am send-trim-memory $pid $level';
+  String sendTrimMemory(String pid, String level, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am send-trim-memory $pid $level';
 
   /// 查看更多信息
-  String am = 'adb shell am';
+  String am({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell am';
 }
 
 class AdbPMScript {
@@ -235,43 +270,52 @@ class AdbPMScript {
   static AdbPMScript? _singleton;
 
   /// 安装包路径信息
-  String apkPath(String packageName) =>
-      'adb shell pm path --user 0 $packageName';
+  String apkPath(String packageName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm path --user 0 $packageName';
 
   /// 查看手机上安装的应用程序
-  String packageList = 'adb shell pm list packages';
+  String packageList({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages';
 
   /// 输出包和包相关联的文件
-  String associatedPackages = 'adb shell pm list packages -f';
+  String associatedPackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -f';
 
   /// 只输出禁用的包(有可能没有)
-  String disablePackages = 'adb shell pm list packages -d';
+  String disablePackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -d';
 
   /// 只输出启用的包
-  String enablePackages = 'adb shell pm list packages -e';
+  String enablePackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -e';
 
   /// 只输出系统的包
-  String systemPackages = 'adb shell pm list packages -s';
+  String systemPackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -s';
 
   /// 只输出第三方的包
-  String userPackages = 'adb shell pm list packages -3';
+  String userPackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -3';
 
   /// 只输出包和安装信息（安装来源）
-  String installPackages = 'adb shell pm list packages -i';
+  String installPackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -i';
 
   /// 只输出包和未安装包信息（安装来源）
-  String uninstallPackages = 'adb shell pm list packages -u';
+  String uninstallPackages({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages -u';
 
   /// 根据用户id查询用户的空间的所有包，USER_ID代表当前连接设备的顺序，从零开始：
-  String userAllPackages(String userId) =>
-      'adb shell pm list packages --user $userId';
+  String userAllPackages(String userId, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm list packages --user $userId';
 
   /// 清除包数据
-  String clearPackageData(String packageName) =>
-      'adb shell pm clear $packageName';
+  String clearPackageData(String packageName, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm clear $packageName';
 
-  // 查看更多信息
-  String pm = 'adb shell pm';
+  /// 查看更多信息
+  String pm({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell pm';
 }
 
 class AdbAdbDumpsysScript {
@@ -281,40 +325,44 @@ class AdbAdbDumpsysScript {
 
   static AdbAdbDumpsysScript? _singleton;
 
-// 查看dumpsys相关命令：
-  String dumpsysHelp = 'adb shell dumpsys --help';
+  /// 查看dumpsys相关命令：
+  String dumpsysHelp({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys --help';
 
   /// 输出可与dumpsys一起使用的完整系统服务列表：
-  String dumpsysL = 'adb shell dumpsys -l';
+  String dumpsysL({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys -l';
 
-  ///   AC powered: false
-  //   USB powered: true
-  //   Wireless powered: false
-  //   Max charging current: 500000
-  //   Max charging voltage: 4925000
-  //   Charge counter: 139
-  //   status: 2 //电池状态：2为充电状态 ，其他数字为非充电状态
-  //   health: 2 //电池健康状态：只有数字2表示good
-  //   present: true //电池是否安装在机身
-  //   level: 73 //电量: 百分比
-  //   scale: 100
-  //   voltage: 4058 //电池电压
-  //   temperature: 300 //电池温度，单位是0.1摄氏度
-  //   technology: Li-poly //电池种类
-  String dumpsysBattery = 'adb shell dumpsys battery';
+  /// AC powered: false
+  /// USB powered: true
+  /// Wireless powered: false
+  /// Max charging current: 500000
+  /// Max charging voltage: 4925000
+  /// Charge counter: 139
+  /// status: 2 /// 电池状态：2为充电状态 ，其他数字为非充电状态
+  /// health: 2 /// 电池健康状态：只有数字2表示good
+  /// present: true /// 电池是否安装在机身
+  /// level: 73 /// 电量: 百分比
+  /// scale: 100
+  /// voltage: 4058 /// 电池电压
+  /// temperature: 300 /// 电池温度，单位是0.1摄氏度
+  /// technology: Li-poly /// 电池种类
+  String dumpsysBattery({String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys battery';
 
   /// 将手机切换充电状态
   /// 电池状态：2为充电状态 ，其他数字为非充电状态
-  String setBatteryStatus(int status) =>
-      'adb shell dumpsys battery set status $status';
+  String setBatteryStatus(int status, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys battery set status $status';
 
   /// 改变手机电量
-  String setBatteryLevel(int level) =>
-      'adb shell dumpsys battery set level $level';
+  String setBatteryLevel(int level, {String? serial}) =>
+      'adb ${serial == null ? '' : '-s $serial'} shell dumpsys battery set level $level';
 
   /// 获取整个设备的电量消耗信息
-  String batteryStats({String? packageName}) {
-    var stats = 'adb shell dumpsys batterystats | more';
+  String batteryStats({String? packageName, String? serial}) {
+    var stats =
+        'adb ${serial == null ? '' : '-s $serial'} shell dumpsys batterystats | more';
     if (packageName != null) stats = stats.replaceFirst('|', '$packageName |');
     return stats;
   }

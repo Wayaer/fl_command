@@ -75,15 +75,15 @@ class Button extends SimpleButton {
     Key? key,
     GestureTapCallback? onTap,
   }) : super(
-          text: text,
-          textStyle: const TextStyle(color: Colors.white, height: 1),
-          onTap: onTap,
-          key: key,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-              color: Colors.lightBlue, borderRadius: BorderRadius.circular(6)),
-        );
+            text: text,
+            textStyle: const TextStyle(color: Colors.white, height: 1),
+            onTap: onTap,
+            key: key,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+                color: Colors.lightBlue,
+                borderRadius: BorderRadius.circular(6)));
 }
 
 Future<bool> setDesktopSize(Size size) =>

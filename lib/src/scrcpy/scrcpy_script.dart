@@ -240,8 +240,7 @@ class ScrcpyScript {
   /// 安装 scrcpy
   String get install => 'install scrcpy';
 
-  /// 安装 adb
-  String get installADB => 'install adb';
+
 
   /// 安装 android-platform-tools
   String get installAndroidTools => 'install android-platform-tools';

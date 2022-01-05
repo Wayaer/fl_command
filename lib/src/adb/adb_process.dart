@@ -1,34 +1,65 @@
 import 'package:fl_command/fl_command.dart';
+import 'package:flutter/foundation.dart';
 import 'package:process_run/shell.dart';
 
 class AdbProcess extends FlProcess {
   AdbProcess(
-      {Shell? shell,
-        ShellLinesController? shellController,
-        TerminalController? terminalController,
-        String? path,
-        FlProcessOutput? onOutput})
+      {ShellLinesController? shellController,
+      TerminalController? terminalController,
+      String? path,
+      FlProcessOutput? onOutput})
       : super(
-      shell: shell,
-      shellController: shellController,
-      onOutput: onOutput,
-      terminalController: terminalController);
+            shellController: shellController,
+            onOutput: onOutput,
+            terminalController: terminalController);
 
   bool get hasADB => whichSync('adb') != null;
+
   AdbScript adbScript = AdbScript();
 
-  Future<bool> getDevices() async {
+  Future<List<String>?> install() async {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return null;
+      case TargetPlatform.fuchsia:
+        return null;
+      case TargetPlatform.iOS:
+        return null;
+      case TargetPlatform.linux:
+        break;
+      case TargetPlatform.macOS:
+        if (whichSync('brew') == null) return null;
+        await runScript('brew ${adbScript.installADB}');
+        break;
+      case TargetPlatform.windows:
+        break;
+    }
+    return currentOutput;
+  }
+
+  Future<List<String>> getDevices() async {
     await runScript(adbScript.devices);
-    return false;
+    currentOutput.removeRange(0, 2);
+    return currentOutput.map((e) => e.removeSuffix('device').trim()).toList();
   }
 
-  Future<bool> startServer() async {
+  Future<List<String>> getAndroidId({String? serial}) async {
+    await runScript(adbScript.getAndroidId(serial: serial));
+    return currentOutput;
+  }
+
+  Future<List<String>> wmSize({String? serial}) async {
+    await runScript(adbScript.wmSize(serial: serial));
+    return currentOutput;
+  }
+
+  Future<List<String>> startServer() async {
     await runScript(adbScript.startServer);
-    return false;
+    return currentOutput;
   }
 
-  Future<bool> killServer() async {
+  Future<List<String>> killServer() async {
     await runScript(adbScript.killServer);
-    return false;
+    return currentOutput;
   }
 }

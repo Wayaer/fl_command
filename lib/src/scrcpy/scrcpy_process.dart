@@ -5,13 +5,11 @@ import 'package:process_run/shell.dart';
 
 class ScrcpyProcess extends FlProcess {
   ScrcpyProcess(
-      {Shell? shell,
-      ShellLinesController? shellController,
+      {ShellLinesController? shellController,
       TerminalController? terminalController,
       String? path,
       FlProcessOutput? onOutput})
       : super(
-            shell: shell,
             shellController: shellController,
             onOutput: onOutput,
             terminalController: terminalController);
@@ -21,7 +19,6 @@ class ScrcpyProcess extends FlProcess {
 
   Future<bool> help([String? serial, bool autoADB = false]) async {
     await runScript(scrcpyScript.help);
-
     return false;
   }
 

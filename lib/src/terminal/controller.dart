@@ -52,10 +52,3 @@ class TerminalController with ChangeNotifier {
   }
 }
 
-extension ExtensionString on String {
-  /// 移出头部指定 [prefix] 不包含不移出
-  String removePrefix(String prefix) {
-    if (!startsWith(prefix)) return this;
-    return substring(prefix.length);
-  }
-}
