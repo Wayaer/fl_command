@@ -37,10 +37,15 @@ class AdbProcess extends FlProcess {
     return currentOutput;
   }
 
+  String removeSuffix(String string, String suffix) {
+    if (!string.endsWith(suffix)) return string;
+    return string.substring(0, string.length - suffix.length);
+  }
+
   Future<List<String>> getDevices() async {
     await runScript(adbScript.devices);
     currentOutput.removeRange(0, 2);
-    return currentOutput.map((e) => e.removeSuffix('device').trim()).toList();
+    return currentOutput.map((e) => removeSuffix(e, 'device').trim()).toList();
   }
 
   Future<List<String>> getAndroidId({String? serial}) async {
