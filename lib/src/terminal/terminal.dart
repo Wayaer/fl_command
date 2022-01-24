@@ -102,8 +102,8 @@ class TerminalStyle {
     this.noneColor = const TerminalColor(Colors.blue, Colors.white),
     this.echoColor =
         const TerminalColor(Colors.deepPurpleAccent, Colors.deepPurpleAccent),
-    this.outputColor = const TerminalColor(Colors.blue, Colors.white),
-    this.runColor = const TerminalColor(Colors.green, Colors.white),
+    this.outputColor = const TerminalColor(Colors.blue, Colors.blue),
+    this.runColor = const TerminalColor(Colors.green, Colors.green),
     this.exceptionColor = const TerminalColor(Colors.red, Colors.red),
   });
 
