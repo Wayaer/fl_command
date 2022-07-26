@@ -1,5 +1,8 @@
 library fl_command;
 
+export 'package:process_run/process_cmd.dart';
+export 'package:process_run/shell.dart';
+
 export 'src/adb/adb_process.dart';
 export 'src/adb/adb_script.dart';
 export 'src/process/process.dart';
