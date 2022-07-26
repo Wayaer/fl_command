@@ -37,7 +37,7 @@ class RuntimeEnvironment {
     _environment[_homeKey] = '${_environment[_filesKey]}/home';
     _environment[_tmpKey] = '${_environment[_usrKey]}/tmp';
     _environment[_pathKey] =
-        '${_environment[_binKey]}:' + (Platform.environment['PATH'] ?? '');
+        '${_environment[_binKey]}:${Platform.environment['PATH'] ?? ''}';
     _isInit = true;
   }
 
@@ -48,9 +48,8 @@ class RuntimeEnvironment {
     if (_isInit) {
       return;
     }
-    String dataPath = FileSystemEntity.parentOf(Platform.resolvedExecutable) +
-        Platform.pathSeparator +
-        'data';
+    String dataPath =
+        '${FileSystemEntity.parentOf(Platform.resolvedExecutable)}${Platform.pathSeparator}data';
     Directory dataDir = Directory(dataPath);
     if (!dataDir.existsSync()) {
       dataDir.createSync();
@@ -64,16 +63,16 @@ class RuntimeEnvironment {
     _environment[_tmpKey] =
         '${_environment[_usrKey]}${Platform.pathSeparator}tmp';
     _environment[_pathKey] =
-        '${_environment[_binKey]}:' + (Platform.environment['PATH'] ?? '');
+        '${_environment[_binKey]}:${Platform.environment['PATH'] ?? ''}';
     _isInit = true;
   }
 
   Map<String, String> environment() {
     final Map<String, String> map = Map.from(Platform.environment);
     if (Platform.isWindows) {
-      map['PATH'] = binPath + ';' + (map['PATH'] ?? '');
+      map['PATH'] = '$binPath;${map['PATH'] ?? ''}';
     } else {
-      map['PATH'] = binPath + ':' + (map['PATH'] ?? '');
+      map['PATH'] = '$binPath:${map['PATH'] ?? ''}';
     }
     return map;
   }

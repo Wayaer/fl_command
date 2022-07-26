@@ -213,8 +213,8 @@ class FlShell {
   static Map<String, String> getEnvironment() {
     if (kIsWeb) return {};
     final Map<String, String> map = Map.from(Platform.environment);
-    map['PATH'] = RuntimeEnvironment().binPath + ':' + (map['PATH'] ?? '');
-    print(map);
+    map['PATH'] = '${RuntimeEnvironment().binPath}:${map['PATH'] ?? ''}';
+    debugPrint(map.toString());
     return map;
   }
 }

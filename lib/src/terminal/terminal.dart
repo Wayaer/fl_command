@@ -16,7 +16,7 @@ class TerminalView extends StatefulWidget {
   final EdgeInsetsGeometry padding;
 
   @override
-  _TerminalViewState createState() => _TerminalViewState();
+  State<TerminalView> createState() => _TerminalViewState();
 }
 
 class _TerminalViewState extends State<TerminalView> {
@@ -63,7 +63,7 @@ class _TerminalViewState extends State<TerminalView> {
     return RichText(
         textAlign: TextAlign.start,
         text: TextSpan(
-            text: prefix + ' : ',
+            text: '$prefix : ',
             style: widget.style.prefixStyle
                 .copyWith(color: widget.style._prefixColor(prefixType)),
             children: [

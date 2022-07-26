@@ -7,7 +7,7 @@ class FlScrcpy extends StatefulWidget {
   const FlScrcpy({Key? key}) : super(key: key);
 
   @override
-  _FlScrcpyState createState() => _FlScrcpyState();
+  State<FlScrcpy> createState() => _FlScrcpyState();
 }
 
 class _FlScrcpyState extends State<FlScrcpy> {

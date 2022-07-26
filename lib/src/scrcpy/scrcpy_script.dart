@@ -24,7 +24,7 @@ class ScrcpyScript {
   String start([String? serial, bool autoADB = false]) {
     String script = 'scrcpy';
     if (serial != null) script += ' -s $serial';
-    if (autoADB) script = 'autoadb ' + script;
+    if (autoADB) script = 'autoadb $script';
     return script;
   }
 
@@ -239,8 +239,6 @@ class ScrcpyScript {
 
   /// 安装 scrcpy
   String get install => 'install scrcpy';
-
-
 
   /// 安装 android-platform-tools
   String get installAndroidTools => 'install android-platform-tools';
