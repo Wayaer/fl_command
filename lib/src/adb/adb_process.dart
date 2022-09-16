@@ -1,17 +1,12 @@
 import 'package:fl_command/fl_command.dart';
 import 'package:flutter/foundation.dart';
-import 'package:process_run/shell.dart';
 
 class AdbProcess extends FlProcess {
   AdbProcess(
-      {ShellLinesController? shellController,
-      TerminalController? terminalController,
+      {super.shellController,
+      super.terminalController,
       String? path,
-      FlProcessOutput? onOutput})
-      : super(
-            shellController: shellController,
-            onOutput: onOutput,
-            terminalController: terminalController);
+      super.onOutput});
 
   bool get hasADB => whichSync('adb') != null;
 

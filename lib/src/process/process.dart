@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:fl_command/fl_command.dart';
 import 'package:flutter/foundation.dart';
-import 'package:process_run/shell.dart';
 import 'package:synchronized/synchronized.dart';
 
 typedef FlProcessOutput = void Function(String event);

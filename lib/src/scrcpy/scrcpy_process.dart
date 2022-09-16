@@ -1,18 +1,13 @@
 import 'dart:async';
 
 import 'package:fl_command/fl_command.dart';
-import 'package:process_run/shell.dart';
 
 class ScrcpyProcess extends FlProcess {
   ScrcpyProcess(
-      {ShellLinesController? shellController,
-      TerminalController? terminalController,
+      {super.shellController,
+      super.terminalController,
       String? path,
-      FlProcessOutput? onOutput})
-      : super(
-            shellController: shellController,
-            onOutput: onOutput,
-            terminalController: terminalController);
+      super.onOutput});
 
   bool get hasScrcpy => whichSync('scrcpy') != null;
   late ScrcpyScript scrcpyScript = ScrcpyScript();
