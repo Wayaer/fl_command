@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TerminalView extends StatefulWidget {
-  const TerminalView({Key? key,
-    required this.controller,
-    this.padding = const EdgeInsets.all(6),
-    this.style = const TerminalStyle()})
+  const TerminalView(
+      {Key? key,
+      required this.controller,
+      this.padding = const EdgeInsets.all(6),
+      this.style = const TerminalStyle()})
       : super(key: key);
   final TerminalController controller;
   final TerminalStyle style;
@@ -29,6 +30,7 @@ class _TerminalViewState extends State<TerminalView> {
   }
 
   void listener() {
+    setState(() {});
     scrollController.jumpTo(0);
   }
 
@@ -95,11 +97,11 @@ class TerminalStyle {
   const TerminalStyle({
     this.backgroundColor = Colors.black,
     this.prefixStyle =
-    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
     this.contentStyle = const TextStyle(fontWeight: FontWeight.w500),
     this.noneColor = const TerminalColor(Colors.blue, Colors.white),
     this.echoColor =
-    const TerminalColor(Colors.deepPurpleAccent, Colors.deepPurpleAccent),
+        const TerminalColor(Colors.deepPurpleAccent, Colors.deepPurpleAccent),
     this.outputColor = const TerminalColor(Colors.blue, Colors.white),
     this.runColor = const TerminalColor(Colors.green, Colors.green),
     this.exceptionColor = const TerminalColor(Colors.red, Colors.red),
