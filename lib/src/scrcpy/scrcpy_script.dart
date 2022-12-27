@@ -19,8 +19,8 @@ class ScrcpyScript {
   /// 连接到您的设备：adb connect DEVICE_IP:5555 (将 DEVICE_IP 替换为设备 IP)。
   /// 正常运行 scrcpy。
   /// 可能降低码率和分辨率会更好一些：
-  ///  在设备连接时自动启动
-  ///  您可以使用 AutoAdb:
+  /// 在设备连接时自动启动
+  /// 您可以使用 AutoAdb:
   String start([String? serial, bool autoADB = false]) {
     String script = 'scrcpy';
     if (serial != null) script += ' -s $serial';

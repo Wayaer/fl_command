@@ -73,27 +73,7 @@ class FlProcess with ChangeNotifier {
   }
 }
 
-// extension StringExtension on String {
-//   /// 移出头部指定 [prefix] 不包含不移出
-//   String removePrefix(String prefix) {
-//     if (!startsWith(prefix)) return this;
-//     return substring(prefix.length);
-//   }
-//
-//   /// 移出尾部指定 [suffix] 不包含不移出
-//   String removeSuffix(String suffix) {
-//     if (!endsWith(suffix)) return this;
-//     return substring(0, length - suffix.length);
-//   }
-//
-//   /// 移出头部指定长度
-//   String removePrefixLength(int l) => substring(l, length);
-//
-//   /// 移出尾部指定长度
-//   String removeSuffixLength(int l) => substring(0, l);
-// }
-
-// 自实现的Process基于dart:io库中的Process.start
+/// 自实现的Process基于dart:io库中的Process.start
 typedef ProcessCallBack = void Function(String output);
 
 const exitKey = 'process_exit';
@@ -139,7 +119,8 @@ class FlShell {
     );
     processStdout = _process!.stdout.asBroadcastStream();
     processStderr = _process!.stderr.asBroadcastStream();
-    // 不加这个，会出现err输出会累计到最后输出
+
+    /// 不加这个，会出现err输出会累计到最后输出
     processStderr!.transform(utf8.decoder).listen((event) {
       debugPrint('$event  NiProcess');
     });
@@ -163,17 +144,19 @@ class FlShell {
         await _init();
       }
       final StringBuffer buffer = StringBuffer();
-      // 加上换行符
+
+      /// 加上换行符
       if (!script.endsWith('\n')) {
         script += '\n';
       }
       _process!.stdin.write(script);
-      // print('脚本====>$script');
+
+      /// print('脚本====>$script');
       _process!.stdin.write('echo $exitKey\n');
       if (getStderr) {
-        // print('等待错误');
+        /// print('等待错误');
         processStderr!.transform(utf8.decoder).every((String out) {
-          // print('processStdout错误输出为======>$out');
+          /// print('processStdout错误输出为======>$out');
           buffer.write(out);
           callback?.call(out);
           return !resultComp.isCompleted;
@@ -182,11 +165,11 @@ class FlShell {
       if (getStdout) {
         processStdout!.transform(utf8.decoder).every(
           (String out) {
-            // print('processStdout输出为======>$out');
+            /// print('processStdout输出为======>$out');
             buffer.write(out);
             callback?.call(out);
             if (out.contains(exitKey) && !resultComp.isCompleted) {
-              // Log.e('${script.trim()}释放');
+              /// Log.e('${script.trim()}释放');
               resultComp.complete(
                 buffer.toString().replaceAll(exitKey, '').trim(),
               );
@@ -196,9 +179,11 @@ class FlShell {
           },
         );
       }
-      // Log.e('${script.trim()}等待返回');
+
+      /// Log.e('${script.trim()}等待返回');
       String result = await resultComp.future;
-      // Log.e('${script.trim()}返回');
+
+      /// Log.e('${script.trim()}返回');
       return result;
     });
   }

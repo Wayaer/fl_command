@@ -9,8 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_waya: ^2.2.0
-  flutter_curiosity: ^4.0.1
+  flutter_waya: ^3.5.1
+  flutter_curiosity: ^4.1.0
   fl_command:
     path: ../
 
