@@ -1,19 +1,17 @@
 name: fl_command
 description: Command line integration conversion with support for ADB and SCRCPY
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/Wayaer/fl_command.git
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  process_run: ^0.12.3+2
-  synchronized: ^3.0.0+3
+  process_run: ^0.12.5+2
+  synchronized: ^3.0.1
 
 dev_dependencies:
   flutter_lints: ^2.0.1
-
-flutter:
