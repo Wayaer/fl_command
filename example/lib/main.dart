@@ -69,14 +69,14 @@ class _FlPage extends StatelessWidget {
           defaultTargetPlatform == TargetPlatform.windows);
 }
 
-class Button extends SimpleButton {
+class Button extends Universal {
   Button(
     String text, {
     Key? key,
     GestureTapCallback? onTap,
   }) : super(
-            text: text,
-            textStyle: const TextStyle(color: Colors.white, height: 1),
+            child: Text(text,
+                style: const TextStyle(color: Colors.white, height: 1)),
             onTap: onTap,
             key: key,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

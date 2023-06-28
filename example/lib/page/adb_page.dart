@@ -56,7 +56,7 @@ class _FlADBState extends State<FlADB> {
               onChanged: (int index) {
                 currentSerial = devices[index];
               },
-              defaultBuilder: (int? index) {
+              builder: (int? index) {
                 return Text(index == null ? '未选择设备' : devices[index]);
               })
         else
