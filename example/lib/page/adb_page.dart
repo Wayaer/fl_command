@@ -19,9 +19,7 @@ class _FlADBState extends State<FlADB> {
   void initState() {
     super.initState();
     adbProcess.getDevices().then((value) async {
-      final res = await adbProcess.pressInputKeyEvent(
-          value.first.id, InputKeyEvent.menu);
-      print("===");
+      /// await adbProcess.packages(value.first.id);
     });
   }
 

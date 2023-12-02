@@ -5,47 +5,25 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fl_command/fl_command.dart';
 import 'package:fl_command/src/adb/device_info.dart';
-import 'package:fl_command/src/adb/enum.dart';
 import 'package:fl_command/src/platform.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:process_run/shell.dart';
 
 class AdbProcess extends ProcessShell {
   AdbProcess(
-      {String? workingDirectory,
-      bool throwOnError = true,
-      bool includeParentEnvironment = true,
-      bool? runInShell,
-      Encoding stdoutEncoding = const Utf8Codec(),
-      Encoding stderrEncoding = const Utf8Codec(),
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool verbose = true,
-      bool commandVerbose = true,
-      bool commentVerbose = false}) {
-    _shell = Shell(
-        workingDirectory: workingDirectory ?? getHome,
-        throwOnError: throwOnError,
-        includeParentEnvironment: includeParentEnvironment,
-        runInShell: runInShell,
-        stderrEncoding: const Utf8Codec(),
-        stdoutEncoding: const Utf8Codec(),
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr,
-        verbose: verbose,
-        commandVerbose: commandVerbose,
-        commentVerbose: commentVerbose,
-        environment: Platform.environment);
-  }
-
-  /// shell
-  late Shell _shell;
-
-  Shell get shell => _shell;
+      {super.workingDirectory,
+      super.throwOnError = true,
+      super.includeParentEnvironment = true,
+      super.runInShell,
+      super.stdoutEncoding = const Utf8Codec(),
+      super.stderrEncoding = const Utf8Codec(),
+      super.stdin,
+      super.stdout,
+      super.stderr,
+      super.verbose = true,
+      super.commandVerbose = true,
+      super.commentVerbose = false});
 
   /// adb path
   String? _adbPath;
@@ -94,6 +72,24 @@ class AdbProcess extends ProcessShell {
     return runArgs(adbPath!, arguments, onProcess: onProcess);
   }
 
+  /// start adb server
+  Future<bool> startServer() async {
+    final result = await runAdb(['start-server']);
+    return result?.exitCode == 0;
+  }
+
+  /// kill adb server
+  Future<bool> killServer() async {
+    final result = await runAdb(['kill-server']);
+    return result?.exitCode == 0;
+  }
+
+  /// reboot adb server
+  Future<void> rebootServer() async {
+    await killServer();
+    await startServer();
+  }
+
   final List<DeviceInfoModel> _devices = [];
 
   List<DeviceInfoModel> get devices => _devices;
@@ -101,9 +97,9 @@ class AdbProcess extends ProcessShell {
   /// 获取设备列表
   Future<List<DeviceInfoModel>> getDevices() async {
     _devices.clear();
-    var devices = await runAdb(['devices']);
-    if (devices != null) {
-      for (var value in devices.outLines) {
+    final result = await runAdb(['devices']);
+    if (result != null) {
+      for (var value in result.outLines) {
         if (value.contains("List of devices attached")) {
           continue;
         }
@@ -122,7 +118,7 @@ class AdbProcess extends ProcessShell {
 
   /// 获取设备品牌
   Future<DeviceInfoModel?> getDeviceInfo(String device) async {
-    var result = await runAdb(['-s', device, 'shell', 'getprop']);
+    final result = await runAdb(['-s', device, 'shell', 'getprop']);
     if (result != null && result.outLines.isNotEmpty) {
       Map<String, String> info = {};
       for (var element in result.outLines) {
@@ -144,7 +140,7 @@ class AdbProcess extends ProcessShell {
 
   /// 获取设备进程信息
   Future<List<DeviceProcessModel>> getProcessInfo(String device) async {
-    var result = await runAdb(['-s', device, 'shell', 'ps']);
+    final result = await runAdb(['-s', device, 'shell', 'ps']);
     if (result != null && result.outLines.isNotEmpty) {
       final list = <DeviceProcessModel>[];
       for (var element in result.outLines) {
@@ -159,7 +155,7 @@ class AdbProcess extends ProcessShell {
   }
 
   Future<Size?> getResolution(String device) async {
-    var result = await runAdb(['-s', device, 'shell', 'wm', 'size']);
+    final result = await runAdb(['-s', device, 'shell', 'wm', 'size']);
     if (result != null && result.outLines.isNotEmpty) {
       try {
         final str = result.outLines.first;
@@ -175,7 +171,7 @@ class AdbProcess extends ProcessShell {
   }
 
   Future<Size?> getDensity(String device) async {
-    var result = await runAdb(['-s', device, 'shell', 'wm', 'density']);
+    final result = await runAdb(['-s', device, 'shell', 'wm', 'density']);
     if (result != null && result.outLines.isNotEmpty) {
       try {
         final str = result.outLines.first;
@@ -275,5 +271,248 @@ class AdbProcess extends ProcessShell {
   Future<ProcessResult?> push(
       String device, String fromPath, String outPath) async {
     return await runAdb(['-s', device, 'shell', 'push', fromPath, outPath]);
+  }
+
+  /// 重启设备
+  Future<ProcessResult?> reboot(
+      String device, String fromPath, String outPath) async {
+    return await runAdb(['-s', device, 'shell', 'reboot']);
+  }
+
+  /// 查看设备AndroidId
+  Future<String?> getAndroidId(
+      String device, String fromPath, String outPath) async {
+    final result = await runAdb(
+        ['-s', device, 'shell', 'settings', 'get', 'secure', 'android_id']);
+    final outLines = result?.outLines;
+    if (outLines != null || outLines!.isNotEmpty) {
+      return outLines.first;
+    }
+    return null;
+  }
+
+  /// 查看前台Activity
+  Future<String?> getForegroundActivity(String device) async {
+    final result = await runAdb([
+      '-s',
+      device,
+      'shell',
+      'dumpsys',
+      'window',
+      '|',
+      'grep',
+      'mCurrentFocus',
+    ]);
+    var outLines = result?.outLines;
+    if (outLines != null && outLines.isNotEmpty) {
+      return outLines.first.replaceAll("mCurrentFocus=", "");
+    }
+    return null;
+  }
+
+  /// 安装apk
+  Future<bool> installApk(String device, String apkPath) async {
+    final result = await runAdb([
+      '-s',
+      device,
+      'install',
+      '-r',
+      '-d',
+      apkPath,
+    ]);
+    return result?.exitCode == 0;
+  }
+
+  /// 卸载apk
+  Future<bool> uninstallApk(String device, String packageName) async {
+    final result = await runAdb([
+      '-s',
+      device,
+      'uninstall',
+      packageName,
+    ]);
+    return result?.exitCode == 0;
+  }
+
+  /// 停止运行应用
+  Future<bool> stopApp(String device, String packageName) async {
+    final result =
+        await runAdb(['-s', device, 'shell', 'am', 'force-stop', packageName]);
+    return result?.exitCode == 0;
+  }
+
+  /// 启动应用
+  Future<bool> startApp(String device, String packageName) async {
+    final activity = await getLaunchActivityForApp(device, packageName);
+    if (activity != null) {
+      final result = await runAdb([
+        '-s',
+        device,
+        'shell',
+        'am',
+        'start',
+        '-n',
+        activity,
+      ]);
+      return result?.exitCode == 0;
+    }
+    return false;
+  }
+
+  /// 获取启动Activity
+  Future<String?> getLaunchActivityForApp(
+      String device, String packageName) async {
+    var result = await runAdb([
+      '-s',
+      device,
+      'shell',
+      'dumpsys',
+      'package',
+      packageName,
+      '|',
+      'grep',
+      '-A',
+      '1',
+      'MAIN',
+    ]);
+
+    if (result != null && result.outLines.isNotEmpty) {
+      for (var value in result.outLines) {
+        if (value.contains("$packageName/")) {
+          return value.substring(
+              value.indexOf("$packageName/"), value.indexOf(" filter"));
+        }
+      }
+    }
+    return null;
+  }
+
+  /// 重启应用
+  Future<void> restartApp(String device, String packageName) async {
+    await stopApp(device, packageName);
+    await startApp(device, packageName);
+  }
+
+  /// 清除指定App数据
+  Future<bool> clearAppData(String device, String packageName) async {
+    final result =
+        await runAdb(['-s', device, 'shell', 'pm', 'clear', packageName]);
+    return result?.exitCode == 0;
+  }
+
+  /// 保存应用APK到电脑
+  Future<bool> saveAppApk(
+      String device, String packageName, String savePath) async {
+    final result = await runAdb([
+      '-s',
+      device,
+      'shell',
+      'pm',
+      'path',
+      packageName,
+    ]);
+    if (result != null && result.outLines.isNotEmpty) {
+      final path = result.outLines.first.replaceAll("package:", "");
+      final saveResult = await runAdb([
+        '-s',
+        device,
+        'pull',
+        path,
+        savePath,
+      ]);
+      return saveResult?.exitCode == 0;
+    }
+    return false;
+  }
+
+  /// 截图保存到电脑
+  Future<bool> screenshot(String device, String savePath) async {
+    final fileName = 'screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
+    final result = await runAdb([
+      '-s',
+      device,
+      'shell',
+      'screencap',
+      '-p',
+      '/sdcard/$fileName',
+    ]);
+    if (result?.exitCode == 0) {
+      final pullResult =
+          await pull(device, '/sdcard/$fileName', '$savePath/$fileName');
+      if (pullResult?.exitCode == 0) {
+        await deleteFile(device, '/sdcard/$fileName');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// 删除文件
+  Future<bool> deleteFile(String device, String filePath) async {
+    final result = await runAdb(["-s", device, "shell", "rm", "-rf", filePath]);
+    return result?.exitCode == 0;
+  }
+
+  /// 录屏并保存到电脑
+  Future<String?> startRecordScreen(ProcessShell shell, String device) async {
+    final filePath =
+        '/sdcard/screenrecord_${DateTime.now().millisecondsSinceEpoch}.mp4';
+    if (_adbPath != null) {
+      final result = await shell.runArgs(_adbPath!, [
+        '-s',
+        device,
+        'shell',
+        'screenrecord',
+        filePath,
+      ]);
+      if (result?.exitCode == 0) return filePath;
+    }
+    return null;
+  }
+
+  /// 停止录屏
+  Future<bool> stopRecord(ProcessShell shell, String device, String fromPath,
+      String outPath) async {
+    shell.kill();
+    final result = await pull(device, fromPath, outPath);
+    if (result?.exitCode == 0) {
+      final deleteResult = await deleteFile(device, fromPath);
+      return deleteResult;
+    }
+    return false;
+  }
+
+  /// 查看所有包名
+  Future<List<String>> packages(
+    String device, {
+    bool only3 = false,
+    bool onlySystem = false,
+    bool onlyEnable = false,
+    bool onlyDisable = false,
+    bool onlyInstall = false,
+    bool onlyUninstall = false,
+    String? user,
+  }) async {
+    final result = await runAdb([
+      '-s',
+      device,
+      'shell',
+      'pm',
+      'list',
+      'packages',
+      if (user != null) '--user',
+      if (only3) '-3',
+      if (onlySystem) '-s',
+      if (onlyEnable) '-e',
+      if (onlyDisable) '-d',
+      if (onlyInstall) '-i',
+      if (onlyUninstall) '-l'
+    ]);
+    if (result != null && result.outLines.isNotEmpty) {
+      return result.outLines
+          .map((e) => e.replaceFirst('package:', '').trim())
+          .toList();
+    }
+    return [];
   }
 }

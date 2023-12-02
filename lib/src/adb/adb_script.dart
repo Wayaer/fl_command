@@ -7,9 +7,6 @@ class AdbScript {
 
   static AdbScript? _singleton;
 
-  /// 一些交互
-  final AdbInputScript input = AdbInputScript();
-
   /// am 数据
   final AdbAMScript am = AdbAMScript();
 
@@ -18,35 +15,6 @@ class AdbScript {
 
   /// dumpsys 数据
   final AdbAdbDumpsysScript dumpsys = AdbAdbDumpsysScript();
-
-  /// 关闭adb服务
-  String killServer = 'adb kill-server';
-
-  /// 打开adb服务
-  String startServer = 'adb start-server';
-
-  /// 获取连接的设备
-  String devices = 'adb devices';
-
-  /// 从手机取出文件
-  String pull(String phonePath, String computerPath) =>
-      'adb pull $phonePath $computerPath';
-
-  /// 往手机中添加文件
-  String push(String computerPath, String phonePath) =>
-      'adb push $computerPath $phonePath';
-
-  /// 安装
-  String install(String apkPath, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} install $apkPath';
-
-  /// 卸载包
-  String uninstall(String package, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} uninstall $package';
-
-  /// 获得手机id
-  String getAndroidId({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell settings get secure android_id';
 
   /// 可以通过如下命令列出所有显示屏的 id：
   String adbAllDisplay({String? serial}) =>
@@ -66,14 +34,6 @@ class AdbScript {
   /// 查看服务是否存在
   String checkService(String serviceName, {String? serial}) =>
       'adb ${serial == null ? '' : '-s $serial'} shell service check $serviceName';
-
-  /// 截屏
-  String screenCap(String path, {String? displayId, String? serial}) {
-    var screenCap =
-        'adb ${serial == null ? '' : '-s $serial'} shell screencap -p $path';
-    if (displayId != null) screenCap += ' -d screencap';
-    return screenCap;
-  }
 
   String screenRecord(String path,
       {Size? size,
@@ -101,27 +61,6 @@ class AdbScript {
   }
 }
 
-class AdbInputScript {
-  factory AdbInputScript() => _singleton ??= AdbInputScript._();
-
-  AdbInputScript._();
-
-  static AdbInputScript? _singleton;
-
-
-  /// 点击指定坐标位置
-  String touchXY(Offset offset, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell input tap ${offset.dx} ${offset.dy}';
-
-  /// 模拟滑动
-  String swipeXY(Offset startOffset, Offset endOffset, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell input swipe ${startOffset.dx} ${startOffset.dy} ${endOffset.dx} ${endOffset.dy}';
-
-  /// 查看更多信息
-  String input({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell input';
-}
-
 class AdbAMScript {
   factory AdbAMScript() => _singleton ??= AdbAMScript._();
 
@@ -129,10 +68,7 @@ class AdbAMScript {
 
   static AdbAMScript? _singleton;
 
-  /// 启动Activity/Broadcast/Service
-  /// {your package name} / {your  activity}
-  String startApp(String packageName, String activity, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell am start $packageName/$activity';
+  //
 
   /// 这里-a表示动作，-d表述传入的数据，还有-t表示传入的类型
   /// 例如，打开一个网页：

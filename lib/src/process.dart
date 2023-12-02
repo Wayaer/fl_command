@@ -45,6 +45,8 @@ class ProcessShell {
 
   late Shell _shell;
 
+  Shell get shell => _shell;
+
   String? get getHome =>
       Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
 
@@ -87,4 +89,7 @@ class ProcessShell {
     }
     return unzipPath;
   }
+
+  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) =>
+      _shell.kill(signal);
 }

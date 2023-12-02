@@ -5,42 +5,21 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fl_command/fl_command.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:process_run/shell.dart';
 
 class ScrcpyProcess extends ProcessShell {
   ScrcpyProcess(
-      {String? workingDirectory,
-      bool throwOnError = true,
-      bool includeParentEnvironment = true,
-      bool? runInShell,
-      Encoding stdoutEncoding = const Utf8Codec(),
-      Encoding stderrEncoding = const Utf8Codec(),
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool verbose = true,
-      bool commandVerbose = true,
-      bool commentVerbose = false}) {
-    _shell = Shell(
-        workingDirectory: workingDirectory ?? getHome,
-        throwOnError: throwOnError,
-        includeParentEnvironment: includeParentEnvironment,
-        runInShell: runInShell,
-        stderrEncoding: const Utf8Codec(),
-        stdoutEncoding: const Utf8Codec(),
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr,
-        verbose: verbose,
-        commandVerbose: commandVerbose,
-        commentVerbose: commentVerbose,
-        environment: Platform.environment);
-  }
-
-  /// shell
-  late Shell _shell;
-
-  Shell get shell => _shell;
+      {super.workingDirectory,
+      super.throwOnError = true,
+      super.includeParentEnvironment = true,
+      super.runInShell,
+      super.stdoutEncoding = const Utf8Codec(),
+      super.stderrEncoding = const Utf8Codec(),
+      super.stdin,
+      super.stdout,
+      super.stderr,
+      super.verbose = true,
+      super.commandVerbose = true,
+      super.commentVerbose = false});
 
   /// scrcpy path
   String? _scrcpyPath;
