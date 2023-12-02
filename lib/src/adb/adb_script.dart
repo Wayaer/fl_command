@@ -7,9 +7,6 @@ class AdbScript {
 
   static AdbScript? _singleton;
 
-  /// 获取一些信息
-  final AdbGetPropScript getProp = AdbGetPropScript();
-
   /// 一些交互
   final AdbInputScript input = AdbInputScript();
 
@@ -70,14 +67,6 @@ class AdbScript {
   String checkService(String serviceName, {String? serial}) =>
       'adb ${serial == null ? '' : '-s $serial'} shell service check $serviceName';
 
-  /// 获取手机分辨率
-  String wmSize({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell wm size';
-
-  /// 获取手机物理密度
-  String wmDensity({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell wm density';
-
   /// 截屏
   String screenCap(String path, {String? displayId, String? serial}) {
     var screenCap =
@@ -112,46 +101,6 @@ class AdbScript {
   }
 }
 
-class AdbGetPropScript {
-  factory AdbGetPropScript() => _singleton ??= AdbGetPropScript._();
-
-  AdbGetPropScript._();
-
-  static AdbGetPropScript? _singleton;
-
-  /// 获取手机产品信息
-  String grepProduct({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep product';
-
-  /// 获取手机配置信息
-  String grepBuild({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep build';
-
-  /// 获取手机虚拟机信息
-  String grepHeap({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell getprop | grep heap';
-
-  /// 获取更多信息
-  String getProp({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell getprop';
-
-  /// 查看手机内存信息
-  String cat({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell cat';
-
-  /// 查看手机CPU信息
-  String cpuInfo({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell cat /proc/cpuinfo';
-
-  /// 查看手机里所有应用程序的进程信息
-  String ps({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell ps';
-
-  /// 查看应用程序的进程信息
-  String psPackage(String packageName, {String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell ps | grep $packageName';
-}
-
 class AdbInputScript {
   factory AdbInputScript() => _singleton ??= AdbInputScript._();
 
@@ -159,16 +108,6 @@ class AdbInputScript {
 
   static AdbInputScript? _singleton;
 
-  /// 模拟输入文本
-  String inputText(String data) => 'adb shell input text "$data"';
-
-  /// 模拟返回键
-  String touchBack({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell input keyevent 4';
-
-  /// 模拟点击home
-  String touchHome({String? serial}) =>
-      'adb ${serial == null ? '' : '-s $serial'} shell input keyevent 3';
 
   /// 点击指定坐标位置
   String touchXY(Offset offset, {String? serial}) =>

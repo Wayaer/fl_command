@@ -18,6 +18,11 @@ class _FlADBState extends State<FlADB> {
   @override
   void initState() {
     super.initState();
+    adbProcess.getDevices().then((value) async {
+      final res = await adbProcess.pressInputKeyEvent(
+          value.first.id, InputKeyEvent.menu);
+      print("===");
+    });
   }
 
   @override

@@ -44,24 +44,14 @@ class _AppState extends State<_App> {
   }
 
   Future<void> _push(Widget widget) async {
-    await push(_FlPage(widget));
+    await push(Scaffold(
+        appBar: AppBar(title: const Text("")),
+        body: Universal(isStack: true, children: [
+          (supportedPlatforms
+              ? widget
+              : const Center(child: Text('The platform is not supported'))),
+        ])));
   }
-}
-
-class _FlPage extends StatelessWidget {
-  const _FlPage(this.widget);
-
-  final Widget widget;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-          body: Universal(isStack: true, children: [
-        (supportedPlatforms
-                ? widget
-                : const Center(child: Text('The platform is not supported')))
-            .expand,
-        const Positioned(left: 12, top: 12, child: BackButton()),
-      ]));
 
   bool get supportedPlatforms => !isWeb && isDesktop;
 }
