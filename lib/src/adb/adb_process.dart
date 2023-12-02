@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fl_command/fl_command.dart';
-import 'package:fl_command/src/adb/device_info.dart';
 import 'package:fl_command/src/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -248,9 +247,9 @@ class AdbProcess extends ProcessShell {
   }
 
   /// 获取当前UI节点
-  Future<ProcessResult?> getCurrentUInode(String device,
+  Future<String?> getCurrentUInode(String device,
       {String outPath = '/sdcard/ui.xml'}) async {
-    return await runAdb([
+    final result = await runAdb([
       '-s',
       device,
       'shell',
@@ -259,12 +258,20 @@ class AdbProcess extends ProcessShell {
       '--compressed',
       outPath
     ]);
+    if (result?.exitCode == 0) {
+      return outPath;
+    }
+    return null;
   }
 
   /// 从设备中获取文件
-  Future<ProcessResult?> pull(
-      String device, String fromPath, String outPath) async {
-    return await runAdb(['-s', device, 'shell', 'pull', fromPath, outPath]);
+  Future<String?> pull(String device, String fromPath, String outPath) async {
+    final result =
+        await runAdb(['-s', device, 'shell', 'pull', fromPath, outPath]);
+    if (result?.exitCode == 0) {
+      return outPath;
+    }
+    return null;
   }
 
   /// 推送文件到设备
@@ -439,7 +446,7 @@ class AdbProcess extends ProcessShell {
     if (result?.exitCode == 0) {
       final pullResult =
           await pull(device, '/sdcard/$fileName', '$savePath/$fileName');
-      if (pullResult?.exitCode == 0) {
+      if (pullResult != null) {
         await deleteFile(device, '/sdcard/$fileName');
         return true;
       }
@@ -475,7 +482,7 @@ class AdbProcess extends ProcessShell {
       String outPath) async {
     shell.kill();
     final result = await pull(device, fromPath, outPath);
-    if (result?.exitCode == 0) {
+    if (result != null) {
       final deleteResult = await deleteFile(device, fromPath);
       return deleteResult;
     }

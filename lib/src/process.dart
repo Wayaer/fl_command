@@ -55,8 +55,8 @@ class ProcessShell {
     try {
       return await _shell.runExecutableArguments(executable, arguments,
           onProcess: onProcess);
-    } catch (e) {
-      debugPrint("ProcessShell runArgs : $e");
+    } on ShellException catch (msg, e) {
+      debugPrint("ProcessShell run : $msg - $e");
       return null;
     }
   }
@@ -65,8 +65,8 @@ class ProcessShell {
       {ProcessShellProcess? onProcess}) async {
     try {
       return await _shell.run(executable, onProcess: onProcess);
-    } catch (e) {
-      debugPrint("ProcessShell run : $e");
+    } on ShellException catch (msg, result) {
+      debugPrint("ProcessShell run : $msg - $result");
       return [];
     }
   }
