@@ -1,16 +1,20 @@
 import 'package:example/page/adb_page.dart';
 import 'package:example/page/scrcpy_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
-  runApp(const ExtendedWidgetsApp(home: _App()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      navigatorKey: GlobalWayUI().navigatorKey,
+      scaffoldMessengerKey: GlobalWayUI().scaffoldMessengerKey,
+      debugShowCheckedModeBanner: false,
+      home: const _App()));
 }
 
 class _App extends StatefulWidget {
-  const _App({Key? key}) : super(key: key);
+  const _App();
 
   @override
   _AppState createState() => _AppState();
@@ -20,74 +24,58 @@ class _AppState extends State<_App> {
   @override
   void initState() {
     super.initState();
-    setDesktopSize(const Size(350, 650));
+    DesktopWindowsSize.iPhone4P7.set();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        padding: const EdgeInsets.all(10),
-        appBar: AppBar(
-            backgroundColor: Colors.lightBlue,
-            elevation: 0,
-            title: const Text('FlCommand')),
-        children: [
-          Button('adb script', onTap: () {
+    return Scaffold(
+        body: Universal(
+            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            children: [
+          Button('adb script', onPressed: () {
             _push(const FlADB());
           }),
-          Button('scrcpy script', onTap: () {
+          Button('scrcpy script', onPressed: () {
             _push(const FlScrcpy());
           }),
-        ]);
+        ]));
   }
 
   Future<void> _push(Widget widget) async {
-    setDesktopSize(const Size(600, 600));
     await push(_FlPage(widget));
-    setDesktopSize(const Size(350, 650));
   }
 }
 
 class _FlPage extends StatelessWidget {
-  const _FlPage(this.widget, {Key? key}) : super(key: key);
+  const _FlPage(this.widget);
+
   final Widget widget;
 
   @override
-  Widget build(BuildContext context) =>
-      ExtendedScaffold(isStack: true, children: [
+  Widget build(BuildContext context) => Scaffold(
+          body: Universal(isStack: true, children: [
         (supportedPlatforms
                 ? widget
                 : const Center(child: Text('The platform is not supported')))
             .expand,
         const Positioned(left: 12, top: 12, child: BackButton()),
-      ]);
+      ]));
 
-  bool get supportedPlatforms =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.macOS ||
-          defaultTargetPlatform == TargetPlatform.linux ||
-          defaultTargetPlatform == TargetPlatform.windows);
+  bool get supportedPlatforms => !isWeb && isDesktop;
 }
 
-class Button extends Universal {
-  Button(
-    String text, {
-    Key? key,
-    GestureTapCallback? onTap,
-  }) : super(
-            child: Text(text,
-                style: const TextStyle(color: Colors.white, height: 1)),
-            onTap: onTap,
-            key: key,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-                color: Colors.lightBlue,
-                borderRadius: BorderRadius.circular(6)));
-}
+class Button extends StatelessWidget {
+  const Button(this.text, {this.onPressed, super.key});
 
-Future<bool> setDesktopSize(Size size) =>
-    Curiosity().desktop.focusDesktop().then((value) {
-      if (value) Curiosity().desktop.setDesktopSize(size);
-      return value;
-    });
+  final VoidCallback? onPressed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(onPressed: onPressed, child: Text(text)));
+  }
+}

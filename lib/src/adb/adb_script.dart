@@ -22,9 +22,6 @@ class AdbScript {
   /// dumpsys 数据
   final AdbAdbDumpsysScript dumpsys = AdbAdbDumpsysScript();
 
-  /// 安装 adb
-  String get installADB => 'install adb';
-
   /// 关闭adb服务
   String killServer = 'adb kill-server';
 

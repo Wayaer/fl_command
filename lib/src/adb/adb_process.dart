@@ -1,65 +1,92 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:fl_command/fl_command.dart';
-import 'package:flutter/foundation.dart';
+import 'package:fl_command/src/platform.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:process_run/shell.dart';
 
-class AdbProcess extends FlProcess {
+class AdbProcess extends ProcessShell {
   AdbProcess(
-      {super.shellController,
-      super.terminalController,
-      String? path,
-      super.onOutput});
+      {String? workingDirectory,
+      bool throwOnError = true,
+      bool includeParentEnvironment = true,
+      bool? runInShell,
+      Encoding stdoutEncoding = const Utf8Codec(),
+      Encoding stderrEncoding = const Utf8Codec(),
+      Stream<List<int>>? stdin,
+      StreamSink<List<int>>? stdout,
+      StreamSink<List<int>>? stderr,
+      bool verbose = true,
+      bool commandVerbose = true,
+      bool commentVerbose = false}) {
+    _shell = Shell(
+        workingDirectory: workingDirectory ?? getHome,
+        throwOnError: throwOnError,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell,
+        stderrEncoding: const Utf8Codec(),
+        stdoutEncoding: const Utf8Codec(),
+        stdin: stdin,
+        stdout: stdout,
+        stderr: stderr,
+        verbose: verbose,
+        commandVerbose: commandVerbose,
+        commentVerbose: commentVerbose,
+        environment: Platform.environment);
+  }
 
-  bool get hasADB => whichSync('adb') != null;
+  /// shell
+  late Shell _shell;
 
-  AdbScript adbScript = AdbScript();
+  Shell get shell => _shell;
 
-  Future<List<String>?> install() async {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return null;
-      case TargetPlatform.fuchsia:
-        return null;
-      case TargetPlatform.iOS:
-        return null;
-      case TargetPlatform.linux:
-        break;
-      case TargetPlatform.macOS:
-        if (whichSync('brew') == null) return null;
-        await runScript('brew ${adbScript.installADB}');
-        break;
-      case TargetPlatform.windows:
-        break;
+  /// adb path
+  String? _adbPath;
+
+  String? get adbPath => _adbPath;
+
+  /// 下载adb文件
+  Future<String?> download() async {
+    final directory = await getTemporaryDirectory();
+    final filePath =
+        "${directory.path}${pathSeparator}adb${pathSeparator}adb.zip";
+    var url = downloadUrl();
+    if (url == null || url.isEmpty) return null;
+    var response = await Dio().download(url, filePath);
+    if (response.statusCode == 200) {
+      return unzipPlatformToolsFile(filePath, 'adb');
     }
-    return currentOutput;
+    return null;
   }
 
-  String removeSuffix(String string, String suffix) {
-    if (!string.endsWith(suffix)) return string;
-    return string.substring(0, string.length - suffix.length);
+  /// adb 下载地址
+  String? downloadUrl() {
+    if (isMacOS) {
+      return "https://dl.google.com/android/repository/platform-tools-latest-darwin.zip";
+    } else if (isWindows) {
+      return "https://dl.google.com/android/repository/platform-tools-latest-windows.zip";
+    } else if (isLinux) {
+      return "https://dl.google.com/android/repository/platform-tools-latest-linux.zip";
+    }
+    return null;
   }
 
-  Future<List<String>> getDevices() async {
-    await runScript(adbScript.devices);
-    currentOutput.removeRange(0, 2);
-    return currentOutput.map((e) => removeSuffix(e, 'device').trim()).toList();
+  /// 获取adb路径
+  Future<String?> checkAdb() async {
+    var executable = Platform.isWindows ? "where" : "which";
+    var result = await runArgs(executable, ['adb']);
+    _adbPath = result?.stdout.toString().trim();
+    return _adbPath ??= await download();
   }
 
-  Future<List<String>> getAndroidId({String? serial}) async {
-    await runScript(adbScript.getAndroidId(serial: serial));
-    return currentOutput;
-  }
-
-  Future<List<String>> wmSize({String? serial}) async {
-    await runScript(adbScript.wmSize(serial: serial));
-    return currentOutput;
-  }
-
-  Future<List<String>> startServer() async {
-    await runScript(adbScript.startServer);
-    return currentOutput;
-  }
-
-  Future<List<String>> killServer() async {
-    await runScript(adbScript.killServer);
-    return currentOutput;
+  ///  run Adb
+  Future<ProcessResult?> runAdb(String executable, List<String> arguments,
+      {ProcessShellProcess? onProcess}) async {
+    await checkAdb();
+    if (adbPath == null) return null;
+    return runArgs(adbPath!, arguments, onProcess: onProcess);
   }
 }
