@@ -66,8 +66,10 @@ class AdbProcess extends ProcessShell {
   ///  run Adb
   Future<ProcessResult?> runAdb(List<String> arguments,
       {ProcessShellProcess? onProcess}) async {
-    await checkAdb();
-    if (adbPath == null) return null;
+    if (adbPath == null || adbPath!.isEmpty) {
+      await checkAdb();
+      if (adbPath == null) return null;
+    }
     return runArgs(adbPath!, arguments, onProcess: onProcess);
   }
 
