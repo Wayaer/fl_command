@@ -94,7 +94,8 @@ class AdbProcess extends ProcessShell {
   List<DeviceInfoModel> get devices => _devices;
 
   /// 获取设备列表
-  Future<List<DeviceInfoModel>> getDevices() async {
+  /// deviceInfo = false 默认不获取其他信息
+  Future<List<DeviceInfoModel>> getDevices({bool deviceInfo = false}) async {
     _devices.clear();
     final result = await runAdb(['devices']);
     if (result != null) {
@@ -107,8 +108,12 @@ class AdbProcess extends ProcessShell {
           if (line.isEmpty) {
             continue;
           }
-          final info = await getDeviceInfo(line.first);
-          if (info != null) _devices.add(info);
+          if (deviceInfo) {
+            final info = await getDeviceInfo(line.first);
+            if (info != null) _devices.add(info);
+          } else {
+            _devices.add(DeviceInfoModel(id: line.first, info: {}));
+          }
         }
       }
     }
@@ -266,8 +271,7 @@ class AdbProcess extends ProcessShell {
 
   /// 从设备中获取文件
   Future<String?> pull(String device, String fromPath, String outPath) async {
-    final result =
-        await runAdb(['-s', device, 'shell', 'pull', fromPath, outPath]);
+    final result = await runAdb(['-s', device, 'pull', fromPath, outPath]);
     if (result?.exitCode == 0) {
       return outPath;
     }
@@ -277,7 +281,7 @@ class AdbProcess extends ProcessShell {
   /// 推送文件到设备
   Future<ProcessResult?> push(
       String device, String fromPath, String outPath) async {
-    return await runAdb(['-s', device, 'shell', 'push', fromPath, outPath]);
+    return await runAdb(['-s', device, 'push', fromPath, outPath]);
   }
 
   /// 重启设备
