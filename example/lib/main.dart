@@ -22,12 +22,6 @@ class _App extends StatefulWidget {
 
 class _AppState extends State<_App> {
   @override
-  void initState() {
-    super.initState();
-    DesktopWindowsSize.iPhone4P7.set();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Universal(
