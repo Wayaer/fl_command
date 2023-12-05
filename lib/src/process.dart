@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:fl_command/src/platform.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:process_run/shell.dart';
 
 typedef ProcessShellProcess = void Function(Process process);
@@ -72,20 +71,16 @@ class ProcessShell {
   }
 
   /// 解压并删除文件
-  Future<String> unzipPlatformToolsFile(
-      String zipPath, String unzipDirName) async {
-    final libraryDirectory = await getApplicationSupportDirectory();
-    final unzipPath =
-        "${libraryDirectory.path}$pathSeparator$unzipDirName$pathSeparator";
-
+  Future<String> unzipPlatformToolsFile(String zipFilePath, String unzipPath,
+      {bool delete = true}) async {
     if (isWindows) {
-      final inputStream = InputFileStream(zipPath);
+      final inputStream = InputFileStream(zipFilePath);
       final archive = ZipDecoder().decodeBuffer(inputStream);
       extractArchiveToDisk(archive, unzipPath);
     } else {
       await runArgs("rm", ["-rf", unzipPath]);
-      await runArgs("unzip", [zipPath, "-d", unzipPath]);
-      await runArgs("rm", ["-rf", zipPath]);
+      await runArgs("unzip", [zipFilePath, "-d", unzipPath]);
+      if (delete) await runArgs("rm", ["-rf", zipFilePath]);
     }
     return unzipPath;
   }

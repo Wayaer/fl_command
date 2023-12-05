@@ -29,20 +29,6 @@ class AdbProcess extends ProcessShell {
 
   String? get adbPath => _adbPath;
 
-  /// 下载adb文件
-  Future<String?> download() async {
-    final directory = await getTemporaryDirectory();
-    final filePath =
-        "${directory.path}${pathSeparator}adb${pathSeparator}adb.zip";
-    var url = downloadUrl();
-    if (url == null || url.isEmpty) return null;
-    var response = await Dio().download(url, filePath);
-    if (response.statusCode == 200) {
-      return unzipPlatformToolsFile(filePath, 'adb');
-    }
-    return null;
-  }
-
   /// adb 下载地址
   String? downloadUrl() {
     if (isMacOS) {
@@ -60,7 +46,33 @@ class AdbProcess extends ProcessShell {
     var executable = Platform.isWindows ? "where" : "which";
     var result = await runArgs(executable, ['adb']);
     _adbPath = result?.stdout.toString().trim();
-    return _adbPath ??= await download();
+    if (_adbPath == null) {
+      const name = 'adb';
+
+      /// 查看本地是否有 adb 文件
+      final supportDirectory = await getApplicationSupportDirectory();
+      final savePath =
+          "${supportDirectory.path}$pathSeparator$name$pathSeparator";
+      final adbPath =
+          "${savePath}platform-tools$pathSeparator$name${isWindows ? '.exe' : ''}";
+      if (File(adbPath).existsSync()) return _adbPath = adbPath;
+
+      /// 查看本地是否有 adb 压缩文件
+      final tempDirectory = await getTemporaryDirectory();
+      final zipPath =
+          "${tempDirectory.path}$pathSeparator$name$pathSeparator$name.zip";
+      if (!File(zipPath).existsSync()) {
+        /// 都没有 开始下载
+        var url = downloadUrl();
+        if (url == null || url.isEmpty) return null;
+        debugPrint("download adb... url:$url  save:$zipPath");
+        var response = await Dio().download(url, zipPath);
+        if (response.statusCode != 200) return null;
+      }
+      await unzipPlatformToolsFile(zipPath, savePath, delete: false);
+      return _adbPath = adbPath;
+    }
+    return null;
   }
 
   ///  run Adb
@@ -68,9 +80,35 @@ class AdbProcess extends ProcessShell {
       {ProcessShellProcess? onProcess}) async {
     if (adbPath == null || adbPath!.isEmpty) {
       await checkAdb();
-      if (adbPath == null) return null;
+      if (adbPath == null || adbPath!.isEmpty) return null;
     }
     return runArgs(adbPath!, arguments, onProcess: onProcess);
+  }
+
+  /// 获取设备列表
+  /// deviceInfo = false 默认不获取其他信息
+  Future<List<DeviceInfoModel>> getDevices({bool deviceInfo = false}) async {
+    _devices.clear();
+    final result = await runAdb(['devices']);
+    if (result != null) {
+      for (var value in result.outLines) {
+        if (value.contains("List of devices attached")) {
+          continue;
+        }
+        if (value.contains("device")) {
+          final deviceId = value.replaceAll('device', '').trim();
+          if (deviceId.isNotEmpty) {
+            if (deviceInfo) {
+              final info = await getDeviceInfo(deviceId);
+              if (info != null) _devices.add(info);
+            } else {
+              _devices.add(DeviceInfoModel(id: deviceId, info: {}));
+            }
+          }
+        }
+      }
+    }
+    return _devices;
   }
 
   /// start adb server
@@ -94,33 +132,6 @@ class AdbProcess extends ProcessShell {
   final List<DeviceInfoModel> _devices = [];
 
   List<DeviceInfoModel> get devices => _devices;
-
-  /// 获取设备列表
-  /// deviceInfo = false 默认不获取其他信息
-  Future<List<DeviceInfoModel>> getDevices({bool deviceInfo = false}) async {
-    _devices.clear();
-    final result = await runAdb(['devices']);
-    if (result != null) {
-      for (var value in result.outLines) {
-        if (value.contains("List of devices attached")) {
-          continue;
-        }
-        if (value.contains("device")) {
-          var line = value.split("\t");
-          if (line.isEmpty) {
-            continue;
-          }
-          if (deviceInfo) {
-            final info = await getDeviceInfo(line.first);
-            if (info != null) _devices.add(info);
-          } else {
-            _devices.add(DeviceInfoModel(id: line.first, info: {}));
-          }
-        }
-      }
-    }
-    return _devices;
-  }
 
   /// 获取设备品牌
   Future<DeviceInfoModel?> getDeviceInfo(String device) async {
