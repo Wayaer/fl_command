@@ -47,4 +47,3 @@ class DeviceProcessModel {
   final String s;
   final String name;
 }
-
