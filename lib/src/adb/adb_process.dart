@@ -285,9 +285,7 @@ class AdbProcess extends ProcessShell {
   /// 从设备中获取文件
   Future<String?> pull(String device, String fromPath, String outPath) async {
     final result = await runAdb(['-s', device, 'pull', fromPath, outPath]);
-    if (result?.exitCode == 0) {
-      return outPath;
-    }
+    if (result?.exitCode == 0) return outPath;
     return null;
   }
 
@@ -450,8 +448,9 @@ class AdbProcess extends ProcessShell {
   }
 
   /// 截图保存到电脑
-  Future<bool> screenshot(String device, String savePath) async {
-    final fileName = 'screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
+  /// savePath = "${path}/file_name.png";
+  Future<bool> screenCap(String device, String savePath) async {
+    const fileName = 'screen_cap.png';
     final result = await runAdb([
       '-s',
       device,
@@ -461,12 +460,11 @@ class AdbProcess extends ProcessShell {
       '/sdcard/$fileName',
     ]);
     if (result?.exitCode == 0) {
-      final pullResult =
-          await pull(device, '/sdcard/$fileName', '$savePath/$fileName');
+      final pullResult = await pull(device, '/sdcard/$fileName', savePath);
       if (pullResult != null) {
         await deleteFile(device, '/sdcard/$fileName');
-        return true;
       }
+      return true;
     }
     return false;
   }
