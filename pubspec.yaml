@@ -1,6 +1,6 @@
 name: fl_command
 description: Command line integration conversion with support for ADB and SCRCPY
-version: 1.0.1
+version: 1.0.2
 repository: https://github.com/Wayaer/fl_command.git
 
 environment:
