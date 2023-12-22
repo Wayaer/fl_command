@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_waya: any
-  flutter_curiosity: any
   fl_command:
     path: ../
 

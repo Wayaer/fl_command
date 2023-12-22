@@ -1,7 +1,7 @@
 import 'package:example/page/adb_page.dart';
 import 'package:example/page/scrcpy_page.dart';
+import 'package:example/platform.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {

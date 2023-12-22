@@ -18,9 +18,7 @@ class _FlADBState extends State<FlADB> {
   @override
   void initState() {
     super.initState();
-    adbProcess.getDevices().then((value) async {
-      /// await adbProcess.packages(value.first.id);
-    });
+    adbProcess.getDevices().then((value) async {});
   }
 
   @override
